@@ -1,44 +1,54 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 public class Main {
 	
-	public static int[] arrayOfDiscs;
+	public static Integer[] arrayOfDiscs;
+	public static Integer[] needles;
+	public static Integer a;
+	public static Integer b;
+	public static Integer c;
 	
 	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		String message = "";
+		BufferedReader br = new BufferedReader(new FileReader("data/Hanoi_input.txt"));
+		PrintWriter pw = new PrintWriter("data/Hanoi_output.txt");
 		int numCases = Integer.parseInt(br.readLine());
-		arrayOfDiscs = new int[numCases];
+		arrayOfDiscs = new Integer[numCases];
 		for(int k = 0; k<arrayOfDiscs.length;k++) {
 			arrayOfDiscs[k] = Integer.parseInt(br.readLine());
-			message += solveTowers(arrayOfDiscs[k])+"\n";
+			moveTowers(arrayOfDiscs[k], pw);
 		}
-		bw.write(message);
-		bw.flush();
 		br.close();
-		bw.close();
-	}
-
-	public static String solveTowers(int numDiscs) {
-		return solveTowers(numDiscs,numDiscs,0,0);
+		pw.close();
 	}
 	
-	public static String solveTowers(int numDiscs, int initialNeedle, int tempNeedle, int finalNeedle) {
+	public static void moveTowers(int numDiscs, PrintWriter pw) throws FileNotFoundException {
+		needles = new Integer[3];
+		a = numDiscs;
+		b = 0;
+		c = 0;
+		needles[0] = a;
+		needles[1] = b;
+		needles[2] = c;
+		pw.println(needles[0]+" "+needles[1]+" "+needles[2]);
+		moveTowers(numDiscs, numDiscs,0, 2, 1, pw);
+		pw.print("\n");
+	}
+	
+	public static void moveTowers(int numDiscs, int d, Integer initialNeedle, Integer finalNeedle, Integer tempNeedle, PrintWriter pw) throws FileNotFoundException {
 		if(numDiscs == 1) {
-			String msg = "\n"+initialNeedle+" "+tempNeedle+" "+finalNeedle;
-			finalNeedle = initialNeedle;
-			initialNeedle = 0;
-			return msg+="\n"+initialNeedle+" "+tempNeedle+" "+finalNeedle;
+			needles[initialNeedle]--;
+			needles[finalNeedle]++;
+			pw.println(needles[0]+" "+needles[1]+" "+needles[2]);
 		}else{
-			String msg = "\n"+initialNeedle+" "+tempNeedle+" "+finalNeedle;
-			msg += solveTowers(numDiscs-1, numDiscs-(numDiscs-1), numDiscs-(numDiscs-1), finalNeedle);
-			msg += solveTowers(numDiscs-1, tempNeedle, finalNeedle, initialNeedle);
-			return msg; 
+			moveTowers(numDiscs-1, d, initialNeedle, tempNeedle, finalNeedle, pw);
+			needles[initialNeedle]--;
+			needles[finalNeedle]++;
+			pw.println(needles[0]+" "+needles[1]+" "+needles[2]);
+			moveTowers(numDiscs-1, d, tempNeedle, finalNeedle, initialNeedle, pw); 
 		}
 	}
 }
